@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Cyber ID & QR System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 20%, #1e0938, #0a0b1c, #030308);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 15px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glow */
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .orb-left {
+            width: 320px;
+            height: 320px;
+            background: #ff5e00;
+            top: 15%;
+            left: 5%;
+        }
+        .orb-right {
+            width: 340px;
+            height: 340px;
+            background: #9d00ff;
+            bottom: 15%;
+            right: 5%;
+        }
+
+        /* Layout Stages */
+        .cyber-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Side Pokemon Characters */
+        .side-character {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .side-character img {
+            width: 240px;
+            height: 240px;
+            object-fit: contain;
+        }
+
+        .char-left img {
+            filter: drop-shadow(0 0 25px rgba(255, 94, 0, 0.75));
+            animation: floatLeft 3.5s ease-in-out infinite;
+        }
+
+        .char-right img {
+            filter: drop-shadow(0 0 25px rgba(157, 0, 255, 0.75));
+            animation: floatRight 4s ease-in-out infinite;
+        }
+
+        .side-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            padding: 7px 18px;
+            border-radius: 20px;
+            font-weight: 800;
+        }
+
+        .tag-left {
+            color: #ff7700;
+            border: 1px solid rgba(255, 119, 0, 0.4);
+            background: rgba(255, 119, 0, 0.1);
+            box-shadow: 0 0 15px rgba(255, 119, 0, 0.3);
+        }
+
+        .tag-right {
+            color: #c77dff;
+            border: 1px solid rgba(199, 125, 255, 0.4);
+            background: rgba(199, 125, 255, 0.1);
+            box-shadow: 0 0 15px rgba(199, 125, 255, 0.3);
+        }
+
+        @keyframes floatLeft {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-16px) rotate(2deg); }
+        }
+
+        @keyframes floatRight {
+            0%, 100% { transform: translateY(0) rotate(2deg); }
+            50% { transform: translateY(-16px) rotate(-2deg); }
+        }
+
+        /* Center Hub */
+        .center-hub {
+            flex: 0 0 400px;
+            max-width: 100%;
+            position: relative;
+        }
+
+        .mascot-head {
+            width: 105px;
+            height: 105px;
+            margin: 0 auto -25px auto;
+            position: relative;
+            z-index: 5;
+            animation: mascotBounce 2.5s ease-in-out infinite;
+        }
+
+        .mascot-head img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 14px rgba(255, 208, 0, 0.9));
+        }
+
+        @keyframes mascotBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .card-container {
+            background: rgba(16, 17, 36, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            border-radius: 22px;
+            padding: 35px 25px 25px 25px;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.9);
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffffff;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px #00f0ff;
+            margin-bottom: 18px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input::placeholder {
+            color: #7d84a0;
+        }
+
+        select option {
+            background-color: #101124;
+            color: #ffffff;
+        }
+
+        input:focus, select:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.45);
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s ease;
+            margin-top: 14px;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #ff2a6d, #9b00e8);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 42, 109, 0.4);
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 42, 109, 0.7);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #00f0ff, #0077fe);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.1);
+            color: #bbb;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-top: 10px;
+        }
+
+        #resultSection {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .qr-wrapper {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 12px 0;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        #qrImage {
+            display: block;
+            width: 190px;
+            height: 190px;
+        }
+
+        /* SCANNER RESULT CARD (Jab koi phone se scan karega) */
+        #scannedCardView {
+            display: none;
+            text-align: left;
+            animation: cardPopup 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes cardPopup {
+            0% { opacity: 0; transform: scale(0.7) rotate(-3deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        .id-badge {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(255, 42, 109, 0.15));
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .id-badge::before {
+            content: "AUTHENTIC ID";
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);
+        }
+
+        .id-row {
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+        }
+
+        .id-label {
+            font-size: 11px;
+            color: #8491b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .id-value {
+            font-size: 16px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .glow-cyan {
+            color: #00f0ff;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        }
+
+        .glow-pink {
+            color: #ff4d6d;
+            text-shadow: 0 0 8px rgba(255, 77, 109, 0.6);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(255, 42, 109, 0.6); }
+        }
+
+        @media (max-width: 850px) {
+            .side-character {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-orb orb-left"></div>
+    <div class="bg-orb orb-right"></div>
+
+    <div class="cyber-stage">
+
+        <!-- Left Character -->
+        <div class="side-character char-left">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt="Charizard">
+            <div class="side-tag tag-left">FIRE TYPE 🔥</div>
+        </div>
+
+        <!-- Center Hub -->
+        <div class="center-hub">
+            <div class="mascot-head">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Pikachu">
+            </div>
+
+            <div class="card-container">
+                
+                <!-- 1. Generator Form (Hide hoga jab scan karke khulega) -->
+                <div id="formSection">
+                    <h2 class="title">STUDENT ID QR</h2>
+                    
+                    <div class="input-group">
+                        <input type="text" id="name" placeholder="Student Full Name">
+                        <input type="text" id="uucms" placeholder="UUCMS No (Exact 12 Chars)" maxlength="12" style="text-transform: uppercase;">
+                        <input type="tel" id="phone" placeholder="Mobile No (10 Digits)" maxlength="10">
+                        <input type="number" id="age" placeholder="Age">
+                        <input type="text" id="college" placeholder="College Name">
+                        
+                        <select id="course">
+                            <option value="">-- Choose Course --</option>
+                            <option value="BCA">BCA</option>
+                            <option value="BBA">BBA</option>
+                            <option value="B.COM">B.COM</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-generate" onclick="generateQR()">Generate QR ⚡</button>
+                </div>
+
+                <!-- 2. QR Output Section -->
+                <div id="resultSection">
+                    <h2 class="title">IDENTITY SECURED</h2>
+                    
+                    <div class="qr-wrapper">
+                        <img id="qrImage" src="" alt="Student QR Code">
+                    </div>
+
+                    <p style="color:#aaa; font-size:12px; margin-top:5px;">Scan this QR with any phone camera to view dynamic ID card!</p>
+
+                    <button class="btn btn-download" onclick="downloadQR()">Download QR Code ⬇</button>
+                    <button class="btn btn-reset" onclick="resetForm()">New Identity ↺</button>
+                </div>
+
+                <!-- 3. SCANNED VIEW (Jab koi QR scan karke open karega) -->
+                <div id="scannedCardView">
+                    <h2 class="title" style="margin-bottom: 15px;">STUDENT VERIFIED ⚡</h2>
+                    
+                    <div class="id-badge">
+                        <div class="id-row">
+                            <div class="id-label">Full Name</div>
+                            <div class="id-value glow-cyan" id="cardName">-</div>
+                        </div>
+
+                        <div class="id-row">
+                            <div class="id-label">UUCMS Number</div>
+                            <div class="id-value glow-pink" id="cardUucms">-</div>
+                        </div>
+
+                        <div class="id-row">
+                            <div class="id-label">Course & Age</div>
+                            <div class="id-value" id="cardCourseAge">-</div>
+                        </div>
+
+                        <div class="id-row">
+                            <div class="id-label">College</div>
+                            <div class="id-value" id="cardCollege">-</div>
+                        </div>
+
+                        <div class="id-row" style="border:none; margin-bottom:0; padding-bottom:0;">
+                            <div class="id-label">Contact</div>
+                            <div class="id-value" id="cardPhone">-</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-generate" onclick="window.location.href = window.location.pathname" style="margin-top: 20px;">Generate Your Own QR</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right Character -->
+        <div class="side-character char-right">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" alt="Mewtwo">
+            <div class="side-tag tag-right">PSYCHIC TYPE 🔮</div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentQRUrl = "";
+
+        // Phone numbers only
+        document.getElementById('phone').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // CHECK IF PAGE IS OPENED VIA QR SCAN (URL Parameters Check)
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('name') && params.has('uucms')) {
+                // Hide generator form and show dynamic animated card!
+                document.getElementById('formSection').style.display = "none";
+                document.getElementById('resultSection').style.display = "none";
+                document.getElementById('scannedCardView').style.display = "block";
+
+                // Populate ID Card
+                document.getElementById('cardName').textContent = params.get('name');
+                document.getElementById('cardUucms').textContent = params.get('uucms');
+                document.getElementById('cardCourseAge').textContent = `${params.get('course')} | ${params.get('age')} Years`;
+                document.getElementById('cardCollege').textContent = params.get('college');
+                document.getElementById('cardPhone').textContent = `+91 ${params.get('phone')}`;
+            }
+        });
+
+        function generateQR() {
+            const name = document.getElementById('name').value.trim();
+            const uucms = document.getElementById('uucms').value.trim().toUpperCase();
+            const phone = document.getElementById('phone').value.trim();
+            const age = document.getElementById('age').value.trim();
+            const college = document.getElementById('college').value.trim();
+            const course = document.getElementById('course').value;
+
+            if (!name || !uucms || !phone || !age || !college || !course) {
+                alert("Bhai, saare details bharo pehle!");
+                return;
+            }
+
+            if (uucms.length !== 12) {
+                alert("UUCMS Number pure 12 characters ka hona chahiye!");
+                return;
+            }
+
+            if (phone.length !== 10) {
+                alert("Mobile number 10 digits ka hona chahiye!");
+                return;
+            }
+
+            // QR code me URL encoded parameters embed ho rahe hain
+            const currentBaseUrl = window.location.origin + window.location.pathname;
+            const scanUrl = `${currentBaseUrl}?name=${encodeURIComponent(name)}&uucms=${encodeURIComponent(uucms)}&phone=${encodeURIComponent(phone)}&course=${encodeURIComponent(course)}&college=${encodeURIComponent(college)}&age=${encodeURIComponent(age)}`;
+
+            currentQRUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(scanUrl)}`;
+
+            const qrImage = document.getElementById('qrImage');
+            qrImage.src = currentQRUrl;
+
+            document.getElementById('formSection').style.display = "none";
+            document.getElementById('resultSection').style.display = "block";
+        }
+
+        async function downloadQR() {
+            if (!currentQRUrl) return;
+
+            try {
+                const response = await fetch(currentQRUrl);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = 'Cyber-Student-QR.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+                alert("Image pe long-press karke download karlo!");
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('uucms').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('college').value = '';
+            document.getElementById('course').value = '';
+
+            document.getElementById('resultSection').style.display = "none";
+            document.getElementById('formSection').style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
